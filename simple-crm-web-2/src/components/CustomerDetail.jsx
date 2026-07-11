@@ -1,20 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from 'react';
+import { CustomerContext } from '../contexts/CustomerContext';
+import styles from './CustomerDetail.module.css';
+import Spinner from './Spinner';
 
-import Spinner from "./Spinner";
-import { API_BASE } from "../App";
-import styles from "./CustomerDetail.module.css";
+const API_BASE = 'http://localhost:3001';
 
 function CustomerDetail({ selectedId }) {
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Keep track when user is editing to render the right component
+  const [isEditing, setIsEditing] = useState(false);
+
   useEffect(() => {
     if (!selectedId) return;
 
     const fetchCustomer = async () => {
-
-      
       setLoading(true);
       setError(null);
       try {
@@ -26,7 +28,7 @@ function CustomerDetail({ selectedId }) {
         }
 
         const data = await response.json();
-        console.log("fetchCustomer in CustomerDetail - data received", data)
+        console.log("fetchCustomer in CustomerDetail - data received", data);
         setCustomer(data);
       } catch (err) {
         setError(err.message);
@@ -37,6 +39,15 @@ function CustomerDetail({ selectedId }) {
 
     fetchCustomer();
   }, [selectedId]);
+
+  const handleEditClick = () => setIsEditing(true);
+
+  const handleDone = (updates) => {
+    if (updates) {
+      setCustomer((prev) => ({ ...prev, ...updates }));
+    }
+    setIsEditing(false);
+  };
 
   // Conditional rendering
   if (!selectedId) {
@@ -65,10 +76,33 @@ function CustomerDetail({ selectedId }) {
 
   return (
     <div className={styles.panel}>
-      <h2 className={styles.name}>
-        {customer.firstName} {customer.lastName}
-      </h2>
-      {customer.company && <p className={styles.company}>{customer.company}</p>}
+      {
+        isEditing ? (
+          <CustomerEditForm customer={customer} onDone={handleDone} />
+        ) : (
+          <CustomerView customer={customer} onEditClick={handleEditClick} />
+        )
+      };
+    </div>
+  );
+}
+
+function CustomerView({ customer, onEditClick }) {
+  return (
+    <>
+      <div className={styles.panelHead}>
+        <div>
+          <h2 className={styles.name}>
+            {customer.firstName} {customer.lastName}
+          </h2>
+          {customer.company && (
+            <p className={styles.company}>{customer.company}</p>
+          )}
+        </div>
+        <button className={styles.editButton} onClick={onEditClick}>
+          Edit
+        </button>
+      </div>
 
       <div>
         <p className={styles.contactRow}>{customer.email}</p>
@@ -106,7 +140,144 @@ function CustomerDetail({ selectedId }) {
         <p className={styles.sectionLabel}>Customer since</p>
         <p className={styles.contactRow}>{customer.createdAt}</p>
       </div>
-    </div>
+    </>
+  );
+}
+
+function CustomerEditForm({ customer, onDone }) {
+  const { updateCustomer } = useContext(CustomerContext);
+
+  const [saving, setSaving] = useState(false);
+
+  const handleChange = (e) => {
+    setEditForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await updateCustomer(customer.id, editForm);
+      onDone(editForm);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2 className={styles.name}>Edit customer</h2>
+
+      <div className={styles.section}>
+        <div className={styles.editField}>
+          <label className={styles.sectionLabel} htmlFor="firstName">
+            First name
+          </label>
+          <input
+            id="firstName"
+            name="firstName"
+            className={styles.input}
+            value={editForm.firstName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className={styles.editField}>
+          <label className={styles.sectionLabel} htmlFor="lastName">
+            Last name
+          </label>
+          <input
+            id="lastName"
+            name="lastName"
+            className={styles.input}
+            value={editForm.lastName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className={styles.editField}>
+          <label className={styles.sectionLabel} htmlFor="email">
+            Email
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            className={styles.input}
+            value={editForm.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className={styles.editField}>
+          <label className={styles.sectionLabel} htmlFor="phone">
+            Phone
+          </label>
+          <input
+            id="phone"
+            name="phone"
+            className={styles.input}
+            value={editForm.phone}
+            onChange={handleChange}
+          />
+        </div>
+        <div className={styles.editField}>
+          <label className={styles.sectionLabel} htmlFor="company">
+            Company
+          </label>
+          <input
+            id="company"
+            name="company"
+            className={styles.input}
+            value={editForm.company}
+            onChange={handleChange}
+          />
+        </div>
+        <div className={styles.editField}>
+          <label className={styles.sectionLabel} htmlFor="notes">
+            Notes
+          </label>
+          <textarea
+            id="notes"
+            name="notes"
+            className={styles.input}
+            value={editForm.notes}
+            onChange={handleChange}
+            rows={3}
+          />
+        </div>
+        <div className={styles.editField}>
+          <label className={styles.sectionLabel} htmlFor="status">
+            Status
+          </label>
+          <select
+            id="status"
+            name="status"
+            className={styles.input}
+            value={editForm.status}
+            onChange={handleChange}
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+
+      <div className={styles.editActions}>
+        <button type="submit" className={styles.saveButton} disabled={saving}>
+          {saving ? "Saving..." : "Save"}
+        </button>
+        <button
+          type="button"
+          className={styles.cancelButton}
+          onClick={() => onDone(null)}
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
   );
 }
 
