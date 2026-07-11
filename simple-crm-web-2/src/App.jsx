@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-import { mockCustomers, generateCustomerId } from "./mockData";
+//import { mockCustomers, generateCustomerId } from "./mockData";
 import CustomerCard from "./components/CustomerCard";
 import "./App.css";
 import SearchBar from "./components/SearchBar";
 import CustomerDetail from "./components/CustomerDetail";
+import Spinner from "./components/Spinner";
+
+export  const API_BASE = "http://localhost:3001";
 
 function App() {
-  const [customers, setCustomers] = useState(mockCustomers);
-  // const [firstName, setFirstName] = useState("");
-  // const [lastName, setLastName] = useState("");
-  // const [email, setEmail] = useState("");
+  //const [customers, setCustomers] = useState(mockCustomers);
+  const [customers, setCustomers] = useState([]); // Create an empty array for customers initially, will be populated by the API call
 
   // Use an object to manage form state
   const [form, setForm] = useState({
@@ -32,42 +33,43 @@ function App() {
     });
   };
 
-  const handleAddCustomer = (e) => {
+  const handleAddCustomer = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
 
     const newCustomer = {
-      id: generateCustomerId(),
-      // firstName: firstName,
-      // firstName,
-      // lastName,
-      // email,
-      // Using form object state
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.email,
       phone: "",
-      status: "active",
-      tags: form.tags,       // was tags: []
+      status: form.status,
+      tags: form.tags,
       company: "",
       notes: "",
       createdAt: new Date().toISOString().slice(0, 10),
     };
 
-    // Add new customer to the customers list
-    setCustomers([...customers, newCustomer]);
+    try {
+      const response = await fetch(`${API_BASE}/customers`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCustomer),
+      });
 
-    // Clear the form
-    // setFirstName("");
-    // setLastName("");
-    // setEmail("");
+      if (!response.ok) {
+        throw new Error(`Failed to add customer: ${response.status}`);
+      }
 
-    setForm({
-      firstName: "",
-      lastName: "",
-      email: "",
-      tags: []
-    });
-  };
+      const created = await response.json();
+      setCustomers([...customers, created]);
+      setForm({ firstName: "", lastName: "", email: "", tags: [], status: "active" });
+      setShowForm(false);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };  
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -82,12 +84,28 @@ function App() {
   // Derived state: count of active customers based on the filtered list
   const activeCount = filteredCustomers.filter((c) => c.status === "active").length;
 
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
 
-  const handleDeleteCustomer = (customerId) => {
-    setCustomers(customers.filter((c) => c.id !== customerId));
-    if (selectedCustomer?.id === customerId) {
-      setSelectedCustomer(null);
+  const handleDeleteCustomer = async (customerId) => {
+    try {
+      const response = await fetch(`${API_BASE}/customers/${customerId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete customer: ${response.status}`);
+      }
+
+      // Update the customers state to remove the deleted customer
+      setCustomers(customers.filter((c) => c.id !== customerId));
+      if (selectedId === customerId) {
+        setSelectedId(null);
+      }
+      //Alternatively, you could also refetch the customers from the API after deletion, but this is more efficient.,
+      // e.g. loadCustomers();
+
+    } catch (err) {
+      alert(err.message);
     }
   };
 
@@ -106,11 +124,70 @@ function App() {
     }));
   };
 
+  // const loadCustomers = async () => {
+  //   const response = await fetch(`${API_BASE}/customers`);
+  //   const data = await response.json();
+  //   setCustomers(data);
+  // };
+
   const ALL_TAGS = ["VIP", "Lead", "Referral"];
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+      const loadCustomers = async () => {
+        setLoading(true);
+        try {
+          //fake delay to simulate network latency
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+
+          const response = await fetch(`${API_BASE}/customers`);
+
+          if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+          }
+
+          const data = await response.json();
+          setCustomers(data);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+    loadCustomers();
+  }, [selectedId]);
+
+  if (loading) return <Spinner />;
+  if (error)   return <p className="status-message error">Error: {error}</p>;
+
+  const handleUpdateCustomer = async (customerId, updates) => {
+    try {
+      const response = await fetch(`${API_BASE}/customers/${customerId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update customer: ${response.status}`);
+      }
+
+      const updated = await response.json();
+      setCustomers((prev) =>
+        prev.map((c) => (c.id === customerId ? updated : c))
+      );
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
   return (
     <div className="simple-crm">
-      <h1>Simple CRM (2.3)</h1>
+      <h1>Simple CRM (2.5)</h1>
 
       <button onClick={() => setShowForm(!showForm)} className="toggle-form-btn">
         {showForm ? "Cancel" :  "Add Customer"}
@@ -181,8 +258,8 @@ function App() {
           />
         </div>
 
-        <button type="submit" className="submit-button">
-          Add Customer
+        <button type="submit" className="submit-button" disabled={submitting}>
+          {submitting ? "Adding..." : "Add Customer"}
         </button>
       </form>)
       }
@@ -190,6 +267,10 @@ function App() {
       <div className="crm-layout">
         <div className="customer-panel">
           <SearchBar searchTerm={searchTerm} onSearch={setSearchTerm} />
+
+          {/* <button className="toggle-form-btn" onClick={loadCustomers}>
+            Load Customers
+          </button> */}
 
           <div className="customer-list">
             <h2>Customers ({filteredCustomers.length}/{customers.length}) - {activeCount} current active customers</h2>
@@ -207,8 +288,8 @@ function App() {
                     key={customer.id}
                     customer={customer}
                     onDelete={handleDeleteCustomer}
-                    onSelect={setSelectedCustomer}
-                    isSelected={selectedCustomer?.id === customer.id}
+                    onSelect={setSelectedId}
+                    isSelected={selectedId === customer.id}
                   />
                 ))}
               </div>
@@ -216,7 +297,7 @@ function App() {
           </div>
       </div>
 
-      <CustomerDetail customer={selectedCustomer} />
+      <CustomerDetail selectedId={selectedId} onUpdate={handleUpdateCustomer} />
       </div>
 
     </div>
