@@ -2,8 +2,8 @@
   "customers": [
     {
       "id": "c1",
-      "firstName": "Sarahs",
-      "lastName": "Chenx",
+      "firstName": "Sarah",
+      "lastName": "Chen",
       "email": "sarah.chen@email.com",
       "phone": "+65 9123 4567",
       "status": "active",

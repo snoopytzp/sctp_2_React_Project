@@ -83,6 +83,9 @@ function App() {
     });
   };
 
+  if (loading) return <Spinner />;
+  if (error) return <p className="status-message error">Error: {error}</p>;
+
   return (
     <div className="simple-crm">
       <Header />
@@ -90,7 +93,6 @@ function App() {
       <button className="toggle-form-btn" onClick={toggleForm}>
         {showForm ? "Cancel" : "Add Customer"}
       </button>
-
       {showForm && (
         <form onSubmit={handleAddCustomer} className="add-customer-form">
           <h3>Add New Customer</h3>
