@@ -1,4 +1,3 @@
-// src/components/CustomerCard.jsx (updated)
 import { Mail, Phone } from "lucide-react";
 import styles from "./CustomerCard.module.css";
 
@@ -9,6 +8,10 @@ function initials(firstName, lastName) {
 function CustomerCard({ customer, onDelete, onSelect, isSelected }) {
   const { firstName, lastName, email, phone, status, tags } = customer;
 
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    onDelete(customer.id);
+  };
   return (
     <div
       className={`${styles.card} ${isSelected ? styles.cardSelected : ""}`}
@@ -47,13 +50,7 @@ function CustomerCard({ customer, onDelete, onSelect, isSelected }) {
             </span>
           ))}
         </div>
-        <button
-          className={styles.deleteButton}
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(customer.id);
-          }}
-        >
+        <button className={styles.deleteButton} onClick={handleDelete}>
           Delete
         </button>
       </div>
