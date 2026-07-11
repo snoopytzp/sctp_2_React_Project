@@ -3,6 +3,8 @@ import { useState } from "react";
 import { mockCustomers, generateCustomerId } from "./mockData";
 import CustomerCard from "./components/CustomerCard";
 import "./App.css";
+import SearchBar from "./components/SearchBar";
+import CustomerDetail from "./components/CustomerDetail";
 
 function App() {
   const [customers, setCustomers] = useState(mockCustomers);
@@ -15,6 +17,7 @@ function App() {
     firstName: "",
     lastName: "",
     email: "",
+    tags: [],
   });
 
   const handleChange = (e) => {
@@ -27,13 +30,6 @@ function App() {
       const updatedCopy = { ...prev, [e.target.name]: e.target.value };
       return updatedCopy;
     });
-  };
-
-  // function handleDeleteCustomer
-  const handleDeleteCustomer = (customerId) => {
-    // Returns a new array with the customer with customerId filtered out
-    setCustomers(customers.filter((c) => c.id !== customerId));
-    // can also updater function
   };
 
   const handleAddCustomer = (e) => {
@@ -51,7 +47,7 @@ function App() {
       email: form.email,
       phone: "",
       status: "active",
-      tags: [],
+      tags: form.tags,       // was tags: []
       company: "",
       notes: "",
       createdAt: new Date().toISOString().slice(0, 10),
@@ -69,13 +65,58 @@ function App() {
       firstName: "",
       lastName: "",
       email: "",
+      tags: []
     });
   };
 
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Derived: computed on every render, always in sync
+  const filteredCustomers = customers.filter(
+    (c) =>
+      c.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.email.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  // Derived state: count of active customers based on the filtered list
+  const activeCount = filteredCustomers.filter((c) => c.status === "active").length;
+
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  const handleDeleteCustomer = (customerId) => {
+    setCustomers(customers.filter((c) => c.id !== customerId));
+    if (selectedCustomer?.id === customerId) {
+      setSelectedCustomer(null);
+    }
+  };
+
+  const [showForm, setShowForm] = useState(false); 
+
+  // Why setForm((prev) => ...) instead of setForm({ ...form, ... })? 
+  // When the new state depends on the previous state, always use the function form. 
+  // It guarantees React hands you the latest state value, which matters if multiple updates happen 
+  // in quick succession.
+  const handleTagToggle = (tag) => {
+    setForm((prev) => ({
+      ...prev,
+      tags: prev.tags.includes(tag)
+        ? prev.tags.filter((t) => t !== tag)
+        : [...prev.tags, tag],
+    }));
+  };
+
+  const ALL_TAGS = ["VIP", "Lead", "Referral"];
+
   return (
     <div className="simple-crm">
-      <h1>Simple CRM</h1>
+      <h1>Simple CRM (2.3)</h1>
 
+      <button onClick={() => setShowForm(!showForm)} className="toggle-form-btn">
+        {showForm ? "Cancel" :  "Add Customer"}
+      </button>
+
+      {showForm && (
       <form onSubmit={handleAddCustomer} className="add-customer-form">
         <h3>Add New Customer</h3>
 
@@ -93,7 +134,23 @@ function App() {
             required
           />
         </div>
-
+        
+        <div className="form-field">
+          <label>Tags</label>
+          <div className="tag-options">
+            {ALL_TAGS.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => handleTagToggle(tag)}
+                className={`tag-toggle${form.tags.includes(tag) ? " tag-toggle-active" : ""}`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+        
         <div className="form-field">
           <label htmlFor="lastName">Last name</label>
           <input
@@ -127,21 +184,41 @@ function App() {
         <button type="submit" className="submit-button">
           Add Customer
         </button>
-      </form>
+      </form>)
+      }
 
-      <div className="customer-list">
-        <h2>Customers ({customers.length})</h2>
+      <div className="crm-layout">
+        <div className="customer-panel">
+          <SearchBar searchTerm={searchTerm} onSearch={setSearchTerm} />
 
-        <div className="customers">
-          {customers.map((customer) => (
-            <CustomerCard
-              key={customer.id}
-              customer={customer}
-              onDelete={handleDeleteCustomer}
-            />
-          ))}
-        </div>
+          <div className="customer-list">
+            <h2>Customers ({filteredCustomers.length}/{customers.length}) - {activeCount} current active customers</h2>
+
+            {filteredCustomers.length === 0 ? (
+              <p className="empty-state">
+                {searchTerm
+                  ? "No customers match your search."
+                  : "No customers yet. Add one above!"}
+              </p>
+            ) : (
+              <div className="customers">
+                {filteredCustomers.map((customer) => (
+                  <CustomerCard
+                    key={customer.id}
+                    customer={customer}
+                    onDelete={handleDeleteCustomer}
+                    onSelect={setSelectedCustomer}
+                    isSelected={selectedCustomer?.id === customer.id}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
       </div>
+
+      <CustomerDetail customer={selectedCustomer} />
+      </div>
+
     </div>
   );
 }
