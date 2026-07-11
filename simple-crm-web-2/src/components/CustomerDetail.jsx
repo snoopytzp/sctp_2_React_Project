@@ -1,8 +1,91 @@
-// src/components/CustomerDetail.jsx
-import { useState, useEffect } from "react";
-import { API_BASE } from "../App";
-import Spinner from "./Spinner";
-import styles from "./CustomerDetail.module.css";
+import { useState, useEffect, useContext } from 'react';
+import { CustomerContext } from '../contexts/CustomerContext';
+import styles from './CustomerDetail.module.css';
+import Spinner from './Spinner';
+
+const API_BASE = 'http://localhost:3001';
+
+function CustomerDetail({ selectedId }) {
+  const [customer, setCustomer] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Keep track when user is editing to render the right component
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    if (!selectedId) return;
+
+    const fetchCustomer = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        const response = await fetch(`${API_BASE}/customers/${selectedId}`);
+
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("fetchCustomer in CustomerDetail - data received", data);
+        setCustomer(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCustomer();
+  }, [selectedId]);
+
+  const handleEditClick = () => setIsEditing(true);
+
+  const handleDone = (updates) => {
+    if (updates) {
+      setCustomer((prev) => ({ ...prev, ...updates }));
+    }
+    setIsEditing(false);
+  };
+
+  // Conditional rendering
+  if (!selectedId) {
+    return (
+      <div className={styles.panel}>
+        <p className={styles.empty}>Select a customer to view details.</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.panel}>
+        <p className={styles.empty}>Error: {error}</p>
+      </div>
+    );
+  }
+
+  if (loading || !customer) {
+    return (
+      <div className={styles.panel}>
+        <Spinner size={8} />
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.panel}>
+      {
+        isEditing ? (
+          <CustomerEditForm customer={customer} onDone={handleDone} />
+        ) : (
+          <CustomerView customer={customer} onEditClick={handleEditClick} />
+        )
+      };
+    </div>
+  );
+}
 
 function CustomerView({ customer, onEditClick }) {
   return (
@@ -61,17 +144,9 @@ function CustomerView({ customer, onEditClick }) {
   );
 }
 
-function CustomerEditForm({ customer, onUpdate, onDone }) {
-  const [editForm, setEditForm] = useState({
-    firstName: customer.firstName,
-    lastName: customer.lastName,
-    email: customer.email,
-    phone: customer.phone || "",
-    company: customer.company || "",
-    notes: customer.notes || "",
-    status: customer.status,
-    tags: customer.tags,
-  });
+function CustomerEditForm({ customer, onDone }) {
+  const { updateCustomer } = useContext(CustomerContext);
+
   const [saving, setSaving] = useState(false);
 
   const handleChange = (e) => {
@@ -82,7 +157,7 @@ function CustomerEditForm({ customer, onUpdate, onDone }) {
     e.preventDefault();
     setSaving(true);
     try {
-      await onUpdate(customer.id, editForm);
+      await updateCustomer(customer.id, editForm);
       onDone(editForm);
     } catch (err) {
       alert(err.message);
@@ -97,7 +172,9 @@ function CustomerEditForm({ customer, onUpdate, onDone }) {
 
       <div className={styles.section}>
         <div className={styles.editField}>
-          <label className={styles.sectionLabel} htmlFor="firstName">First name</label>
+          <label className={styles.sectionLabel} htmlFor="firstName">
+            First name
+          </label>
           <input
             id="firstName"
             name="firstName"
@@ -108,7 +185,9 @@ function CustomerEditForm({ customer, onUpdate, onDone }) {
           />
         </div>
         <div className={styles.editField}>
-          <label className={styles.sectionLabel} htmlFor="lastName">Last name</label>
+          <label className={styles.sectionLabel} htmlFor="lastName">
+            Last name
+          </label>
           <input
             id="lastName"
             name="lastName"
@@ -119,7 +198,9 @@ function CustomerEditForm({ customer, onUpdate, onDone }) {
           />
         </div>
         <div className={styles.editField}>
-          <label className={styles.sectionLabel} htmlFor="email">Email</label>
+          <label className={styles.sectionLabel} htmlFor="email">
+            Email
+          </label>
           <input
             id="email"
             name="email"
@@ -131,7 +212,9 @@ function CustomerEditForm({ customer, onUpdate, onDone }) {
           />
         </div>
         <div className={styles.editField}>
-          <label className={styles.sectionLabel} htmlFor="phone">Phone</label>
+          <label className={styles.sectionLabel} htmlFor="phone">
+            Phone
+          </label>
           <input
             id="phone"
             name="phone"
@@ -141,7 +224,9 @@ function CustomerEditForm({ customer, onUpdate, onDone }) {
           />
         </div>
         <div className={styles.editField}>
-          <label className={styles.sectionLabel} htmlFor="company">Company</label>
+          <label className={styles.sectionLabel} htmlFor="company">
+            Company
+          </label>
           <input
             id="company"
             name="company"
@@ -151,7 +236,9 @@ function CustomerEditForm({ customer, onUpdate, onDone }) {
           />
         </div>
         <div className={styles.editField}>
-          <label className={styles.sectionLabel} htmlFor="notes">Notes</label>
+          <label className={styles.sectionLabel} htmlFor="notes">
+            Notes
+          </label>
           <textarea
             id="notes"
             name="notes"
@@ -162,7 +249,9 @@ function CustomerEditForm({ customer, onUpdate, onDone }) {
           />
         </div>
         <div className={styles.editField}>
-          <label className={styles.sectionLabel} htmlFor="status">Status</label>
+          <label className={styles.sectionLabel} htmlFor="status">
+            Status
+          </label>
           <select
             id="status"
             name="status"
@@ -180,130 +269,16 @@ function CustomerEditForm({ customer, onUpdate, onDone }) {
         <button type="submit" className={styles.saveButton} disabled={saving}>
           {saving ? "Saving..." : "Save"}
         </button>
-        <button type="button" className={styles.cancelButton} onClick={() => onDone(null)}>
+        <button
+          type="button"
+          className={styles.cancelButton}
+          onClick={() => onDone(null)}
+        >
           Cancel
         </button>
       </div>
     </form>
   );
-}
-
-function CustomerDetail({ selectedId, onUpdate }) {
-  const [customer, setCustomer] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({});
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (!selectedId) return;
-
-    const fetchCustomer = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(`${API_BASE}/customers/${selectedId}`);
-
-        if (!response.ok) {
-          throw new Error(`Server error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setCustomer(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCustomer();
-  }, [selectedId]);
-
-  if (!selectedId) {
-    return (
-      <div className={styles.panel}>
-        <p className={styles.empty}>Select a customer to view details.</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.panel}>
-        <p className={styles.empty}>Error: {error}</p>
-      </div>
-    );
-  }
-
-  if (loading || !customer) {
-    return (
-      <div className={styles.panel}>
-        <Spinner size={8} />
-      </div>
-    );
-  }
-
-const handleEditClick = () => setIsEditing(true);
-
-const handleDone = (updates) => {
-  if (updates) {
-    setCustomer((prev) => ({ ...prev, ...updates }));
-  }
-  setIsEditing(false);
-};
-
-// const handleEditClick = () => {
-//   setEditForm({
-//     firstName: customer.firstName,
-//     lastName: customer.lastName,
-//     email: customer.email,
-//     phone: customer.phone || "",
-//     company: customer.company || "",
-//     notes: customer.notes || "",
-//     status: customer.status,
-//     tags: customer.tags,
-//   });
-//   setIsEditing(true);
-// };
-
-// const handleEditChange = (e) => {
-//   setEditForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-// };
-
-// const handleEditSubmit = async (e) => {
-//   e.preventDefault();
-//   setSaving(true);
-//   try {
-//     await onUpdate(customer.id, editForm);
-//     setCustomer((prev) => ({ ...prev, ...editForm }));
-//     setIsEditing(false);
-//   } catch (err) {
-//     alert(err.message);
-//   } finally {
-//     setSaving(false);
-//   }
-// };
-
- // src/components/CustomerDetail.jsx
-return (
-  <div className={styles.panel}>
-    {isEditing ? (
-      <CustomerEditForm
-        customer={customer}
-        onUpdate={onUpdate}
-        onDone={handleDone}
-      />
-    ) : (
-      <CustomerView
-        customer={customer}
-        onEditClick={handleEditClick}
-      />
-    )}
-  </div>
-);
 }
 
 export default CustomerDetail;
