@@ -94,9 +94,10 @@
   font-size: var(--text-sm);
   color: var(--text-body);
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-standard),
-              border-color var(--duration-fast) var(--ease-standard),
-              color var(--duration-fast) var(--ease-standard);
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
 }
 
 .tag-toggle-active {
@@ -104,6 +105,16 @@
   border-color: var(--primary-500);
   color: var(--primary-700);
   font-weight: var(--weight-medium);
+}
+/* 
+.card {
+  color: red;
+} */
+
+.empty-state {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  padding: var(--space-6) 0;
 }
 
 .crm-layout {
@@ -117,7 +128,6 @@
   min-width: 0;
 }
 
-/* src/App.css */
 .toggle-form-btn {
   padding: var(--space-2) var(--space-5);
   background: var(--action-primary);

@@ -1,5 +1,3 @@
-// src/components/SearchBar.jsx (first attempt)
-import { useState } from "react";
 import styles from "./SearchBar.module.css";
 
 function SearchBar({ searchTerm, onSearch }) {
