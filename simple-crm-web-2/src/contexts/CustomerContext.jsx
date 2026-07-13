@@ -38,8 +38,9 @@ export function CustomerProvider({ children }) {
         body: JSON.stringify(customerData),
       });
       if (!response.ok) throw new Error(`Server error: ${response.status}`);
-      const created = await response.json();
-      dispatch({ type: "ADD_CUSTOMER", payload: created });
+      const createdCustomer = await response.json();
+      dispatch({ type: "ADD_CUSTOMER", payload: createdCustomer });
+      return createdCustomer; // ← ADD THIS LINE
     } catch (err) {
       dispatch({ type: "ADD_ERROR" });
       alert(`Failed to add customer: ${err.message}`);
@@ -81,7 +82,7 @@ export function CustomerProvider({ children }) {
   const filteredCustomers = customers
     .filter((c) => c.firstName.toLowerCase().includes(searchTerm.toLowerCase()))
     .filter((c) => statusFilter === "all" || c.status === statusFilter);
-
+    
   return (
     <CustomerContext.Provider
       value={{
