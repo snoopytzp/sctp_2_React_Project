@@ -1,4 +1,3 @@
-// src/contexts/CustomerContext.jsx
 import { createContext, useReducer, useState, useEffect } from "react";
 import { customerReducer, initialState } from "../reducers/customerReducer";
 import { API_BASE } from "../App";

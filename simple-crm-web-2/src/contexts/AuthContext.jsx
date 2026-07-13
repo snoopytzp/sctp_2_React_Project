@@ -1,4 +1,3 @@
-// src/contexts/AuthContext.jsx
 import { createContext, useState } from "react";
 
 export const AuthContext = createContext();
@@ -18,6 +17,8 @@ export function AuthProvider({ children }) {
     return user?.role === role;
   };
 
+  // const contextValue = { user, login, logout, hasRole };
+  
   return (
     <AuthContext.Provider value={{ user, login, logout, hasRole }}>
       {children}

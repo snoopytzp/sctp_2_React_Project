@@ -1,5 +1,6 @@
 // src/App.jsx
 import { useContext, useState } from "react";
+
 import { AuthContext } from "./contexts/AuthContext";
 import { CustomerContext } from "./contexts/CustomerContext";
 import LoginPage from "./components/LoginPage";
@@ -30,12 +31,6 @@ function App() {
     setStatusFilter,
     setSelectedId,
   } = useContext(CustomerContext);
-  console.log("test")
-  console.log(filteredCustomers)
-
-  if (!user) return <LoginPage />;
-  if (loading) return <Spinner />;
-  if (error) return <p className="status-message error">Error: {error}</p>;
 
   const [form, setForm] = useState({
     firstName: "",
@@ -83,6 +78,7 @@ function App() {
     });
   };
 
+  if (!user) return <LoginPage />;
   if (loading) return <Spinner />;
   if (error) return <p className="status-message error">Error: {error}</p>;
 
@@ -93,6 +89,7 @@ function App() {
       <button className="toggle-form-btn" onClick={toggleForm}>
         {showForm ? "Cancel" : "Add Customer"}
       </button>
+
       {showForm && (
         <form onSubmit={handleAddCustomer} className="add-customer-form">
           <h3>Add New Customer</h3>
@@ -173,7 +170,7 @@ function App() {
 
       <div className="crm-layout">
         <div className="customer-panel">
-          <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+          <SearchBar searchTerm={searchTerm} onSearch={setSearchTerm} />
           <div className="filter-bar">
             {["all", "active", "inactive"].map((f) => (
               <button

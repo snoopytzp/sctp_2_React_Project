@@ -8,7 +8,7 @@ function LoginPage() {
   // const authCtx = useContext(AuthContext);
   // authCtx.login()
   const { login } = useContext(AuthContext);
-    const [email, setEmail] = useState("daniel@simplesystems.io");    // should be empty. Lazy to key
+  const [email, setEmail] = useState("daniel@simplesystems.io");    // should be empty. Lazy to key
   const [password, setPassword] = useState("password123");          // should be empty. Lazy to key
   const [error, setError] = useState(null);
 
