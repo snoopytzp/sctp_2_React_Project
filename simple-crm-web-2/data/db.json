@@ -3,8 +3,8 @@
     {
       "id": "c1",
       "firstName": "Sarah",
-      "lastName": "Chen",
-      "email": "sarah.chen@email.com",
+      "lastName": "Tan",
+      "email": "sarah.tan@email.com",
       "phone": "+65 9123 4567",
       "status": "active",
       "tags": [
@@ -18,8 +18,8 @@
     {
       "id": "c2",
       "firstName": "James",
-      "lastName": "Tan",
-      "email": "james.tan@email.com",
+      "lastName": "Lee",
+      "email": "james.lee@email.com",
       "phone": "+65 9234 5678",
       "status": "active",
       "tags": [

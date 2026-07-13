@@ -14,10 +14,6 @@ function CustomerCard({ customer, onSelect, isSelected }) {
   const { hasRole } = useContext(AuthContext);
   const { firstName, lastName, email, phone, status, tags } = customer;
 
-  const handleDelete = (e) => {
-    e.stopPropagation();
-    onDelete(customer.id);
-  };
   return (
     <div
       className={`${styles.card} ${isSelected ? styles.cardSelected : ""}`}

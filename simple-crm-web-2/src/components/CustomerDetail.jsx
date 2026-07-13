@@ -1,9 +1,9 @@
-import { useState, useEffect, useContext } from 'react';
-import { CustomerContext } from '../contexts/CustomerContext';
-import styles from './CustomerDetail.module.css';
-import Spinner from './Spinner';
+import { useState, useEffect, useContext } from "react";
 
-const API_BASE = 'http://localhost:3001';
+import Spinner from "./Spinner";
+import { API_BASE } from "../App";
+import styles from "./CustomerDetail.module.css";
+import { CustomerContext } from "../contexts/CustomerContext";
 
 function CustomerDetail({ selectedId }) {
   const [customer, setCustomer] = useState(null);
@@ -20,7 +20,7 @@ function CustomerDetail({ selectedId }) {
       setLoading(true);
       setError(null);
       try {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         const response = await fetch(`${API_BASE}/customers/${selectedId}`);
 
         if (!response.ok) {
@@ -28,7 +28,6 @@ function CustomerDetail({ selectedId }) {
         }
 
         const data = await response.json();
-        console.log("fetchCustomer in CustomerDetail - data received", data);
         setCustomer(data);
       } catch (err) {
         setError(err.message);
@@ -76,13 +75,15 @@ function CustomerDetail({ selectedId }) {
 
   return (
     <div className={styles.panel}>
-      {
-        isEditing ? (
-          <CustomerEditForm customer={customer} onDone={handleDone} />
-        ) : (
-          <CustomerView customer={customer} onEditClick={handleEditClick} />
-        )
-      };
+      {isEditing ? (
+        <CustomerEditForm
+          customer={customer}
+          // onUpdate={onUpdate}
+          onDone={handleDone}
+        />
+      ) : (
+        <CustomerView customer={customer} onEditClick={handleEditClick} />
+      )}
     </div>
   );
 }
@@ -147,6 +148,16 @@ function CustomerView({ customer, onEditClick }) {
 function CustomerEditForm({ customer, onDone }) {
   const { updateCustomer } = useContext(CustomerContext);
 
+  const [editForm, setEditForm] = useState({
+    firstName: customer.firstName,
+    lastName: customer.lastName,
+    email: customer.email,
+    phone: customer.phone || "",
+    company: customer.company || "",
+    notes: customer.notes || "",
+    status: customer.status,
+    tags: customer.tags,
+  });
   const [saving, setSaving] = useState(false);
 
   const handleChange = (e) => {
