@@ -4,6 +4,7 @@ import { mockProducts } from "../../data/products.js";
 import ProductSearchBar from "../components/ProductSearchBar";
 import ProductList from "../components/ProductList";
 import styles from "./ProductsPage.module.css";
+import ExpensiveDisplayComponent from "../components/ExpensiveDisplayComponent.jsx";
 
 function applyDiscount(product) {
   const discount = (product.id % 7) / 20;
@@ -49,6 +50,7 @@ function ProductsPage() {
       <p className={styles.count}>
         Showing <strong>{filteredProducts.length}</strong> products
       </p>
+      <ExpensiveDisplayComponent />
       <ProductList products={filteredProducts} />
     </div>
   );
