@@ -3,7 +3,6 @@ export const initialState = {
   loading: false,
   error: null,
   submitting: false,
-  showForm: false,
 };
 
 export function customerReducer(state, action) {
@@ -24,11 +23,7 @@ export function customerReducer(state, action) {
         customers: [...state.customers, action.payload],
       };
     case "ADD_ERROR":
-      // In a production app, this case would also set an addError field
-      // to display inline feedback. Here we use alert() to keep the lesson focused.
       return { ...state, submitting: false };
-    case "TOGGLE_FORM":
-      return { ...state, showForm: !state.showForm };
     case "UPDATE_CUSTOMER":
       return {
         ...state,

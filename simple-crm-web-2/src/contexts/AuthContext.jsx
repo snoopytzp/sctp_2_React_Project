@@ -17,8 +17,6 @@ export function AuthProvider({ children }) {
     return user?.role === role;
   };
 
-  // const contextValue = { user, login, logout, hasRole };
-  
   return (
     <AuthContext.Provider value={{ user, login, logout, hasRole }}>
       {children}
