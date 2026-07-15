@@ -10,6 +10,7 @@ import EditCustomerPage from "./pages/EditCustomerPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ProductsPage from "./pages/ProductsPage";
 import "./App.css";
 
 export const API_BASE = "http://localhost:3001";
@@ -33,6 +34,7 @@ function App() {
             <Route path="customers/new" element={<NewCustomerPage />} />
             <Route path="customers/:id" element={<CustomerDetailPage />} />
             <Route path="customers/:id/edit" element={<EditCustomerPage />} />
+            <Route path="products" element={<ProductsPage />} />;
           </Route>
         </Route>
 
