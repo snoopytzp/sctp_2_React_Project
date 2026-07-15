@@ -1,4 +1,5 @@
 // src/components/ProductList.jsx
+import {memo} from "react";
 import styles from "../pages/ProductsPage.module.css";
 
 function ProductList({ products }) {
@@ -18,4 +19,4 @@ function ProductList({ products }) {
   );
 }
 
-export default ProductList;
+export default memo(ProductList);

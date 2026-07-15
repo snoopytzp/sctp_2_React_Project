@@ -1,5 +1,5 @@
 // src/pages/ProductsPage.jsx
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { mockProducts } from "../../data/products.js";
 import ProductSearchBar from "../components/ProductSearchBar";
 import ProductList from "../components/ProductList";
@@ -17,10 +17,15 @@ function applyDiscount(product) {
 function ProductsPage() {
   const [search, setSearch] = useState("");
   const [cartCount, setCartCount] = useState(0);
+  
+//   const handleSearchChange = (value) => {
+//     setSearch(value);
+//   };
 
-  const handleSearchChange = (value) => {
+// useCallback: stable function reference across renders
+  const handleSearchChange = useCallback((value) => {
     setSearch(value);
-  };
+  },[]);  // no dependencies, setSearch is stable from useState
 
   // useMemo: only recompute when search changes
   const filteredProducts = useMemo(() => {

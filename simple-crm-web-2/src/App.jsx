@@ -1,3 +1,4 @@
+import {lazy, Suspense} from "react"
 import { BrowserRouter, Routes, Route } from "react-router";
 
 import WelcomePage from "./pages/WelcomePage";
@@ -10,8 +11,12 @@ import EditCustomerPage from "./pages/EditCustomerPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-import ProductsPage from "./pages/ProductsPage";
+//import ProductsPage from "./pages/ProductsPage";
 import "./App.css";
+import Spinner from "./components/Spinner";
+
+// lazy loading
+const ProductsPage = lazy(()=>import("./pages/ProductsPage"));
 
 export const API_BASE = "http://localhost:3001";
 
@@ -34,7 +39,11 @@ function App() {
             <Route path="customers/new" element={<NewCustomerPage />} />
             <Route path="customers/:id" element={<CustomerDetailPage />} />
             <Route path="customers/:id/edit" element={<EditCustomerPage />} />
-            <Route path="products" element={<ProductsPage />} />;
+            <Route path="products" element={
+              <Suspense fallback={<Spinner/>}>  
+                <ProductsPage />
+              </Suspense>
+              } />;
           </Route>
         </Route>
 
