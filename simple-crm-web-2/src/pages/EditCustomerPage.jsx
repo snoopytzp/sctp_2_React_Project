@@ -1,4 +1,3 @@
-// src/pages/EditCustomerPage.jsx
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { API_BASE } from "../App";

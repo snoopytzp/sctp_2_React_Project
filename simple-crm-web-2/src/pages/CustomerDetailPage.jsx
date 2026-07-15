@@ -1,25 +1,29 @@
 // src/pages/CustomerDetailPage.jsx
-import { useContext, useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate, Link } from "react-router";
-import { CustomerContext } from "../contexts/CustomerContext";
 import { API_BASE } from "../App";
 import Spinner from "../components/Spinner";
 import styles from "./CustomerDetailPage.module.css";
+import { CustomerContext } from "../contexts/CustomerContext";
 
 function CustomerDetailPage() {
-  const { id } = useParams(); // id=="c2" when the URL is /app/customer/c2
+  // app/customers/:id
+  // app/customers/c1
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { deleteCustomer } = useContext(CustomerContext);
 
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const navigate = useNavigate();
-  const { deleteCustomer } = useContext(CustomerContext);
 
+  // if(!id) navigate("/app/customers");
+  // if(!id) return <Navigate to=("/app/customers"/>
   const handleDelete = async () => {
     await deleteCustomer(id);
     navigate("/app/customers");
-  }; 
+  };
 
   useEffect(() => {
     const fetchCustomer = async () => {
@@ -113,10 +117,10 @@ function CustomerDetailPage() {
       <div className={styles.section}>
         <p className={styles.sectionLabel}>Customer since</p>
         <p className={styles.contactRow}>{customer.createdAt}</p>
-        <button className={styles.deleteButton} onClick={handleDelete}>
-            Delete Customer
-        </button>
       </div>
+      <button className={styles.deleteButton} onClick={handleDelete}>
+        Delete Customer
+      </button>
     </div>
   );
 }

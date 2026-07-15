@@ -1,4 +1,3 @@
-// src/pages/WelcomePage.jsx
 import { Link } from "react-router";
 import styles from "./WelcomePage.module.css";
 

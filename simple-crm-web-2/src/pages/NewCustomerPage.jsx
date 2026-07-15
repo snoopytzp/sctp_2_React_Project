@@ -1,4 +1,3 @@
-// src/pages/NewCustomerPage.jsx
 import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router";
 import { CustomerContext } from "../contexts/CustomerContext";

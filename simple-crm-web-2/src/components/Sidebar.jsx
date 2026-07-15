@@ -1,14 +1,9 @@
-// src/components/Sidebar.jsx
 import { NavLink } from "react-router";
 import { LayoutDashboard, Users, LogOut } from "lucide-react";
-import styles from "./Sidebar.module.css";
 
-// Temporary stand-in for AuthContext's user, replaced in Part 9
-const DUMMY_USER = {
-  name: "Daniel Goh",
-  email: "daniel@simplesystems.io",
-  role: "admin",
-};
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
+import styles from "./Sidebar.module.css";
 
 function initials(name) {
   return name
@@ -24,7 +19,7 @@ function navLinkClass({ isActive }) {
 }
 
 function Sidebar() {
-  const user = DUMMY_USER;
+  const { user, logout } = useContext(AuthContext);
 
   return (
     <aside className={styles.sidebar}>
@@ -60,11 +55,7 @@ function Sidebar() {
             {user.role}
           </span>
         </div>
-        <button
-          className={styles.signOutBtn}
-          onClick={() => alert("Wired up to real logout in Part 9")}
-          title="Sign out"
-        >
+        <button className={styles.signOutBtn} onClick={logout} title="Sign out">
           <LogOut size={16} />
         </button>
       </div>

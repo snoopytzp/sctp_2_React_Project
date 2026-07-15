@@ -1,20 +1,33 @@
-import { createContext, useReducer, useState, useEffect } from "react";
+import {
+  createContext,
+  useReducer,
+  useState,
+  useEffect,
+  useContext,
+} from "react";
+
+import { AuthContext } from "./AuthContext";
 import { customerReducer, initialState } from "../reducers/customerReducer";
 import { API_BASE } from "../App";
 
 export const CustomerContext = createContext();
 
 export function CustomerProvider({ children }) {
-  // Coupled state — managed by the reducer
+  // Load the user from AuthContext to ensure we only fetch customers when a user is logged in
+  const { user } = useContext(AuthContext);
   const [state, dispatch] = useReducer(customerReducer, initialState);
-  const { customers, loading, error, submitting, showForm } = state;
-
-  // Independent UI state
+  const { customers, loading, error, submitting } = state;
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
+    if (!user) {
+      console.log("No user logged in, skipping customer fetch.");
+      return; // Don't fetch if not logged in
+    }
+
+    console.log("Fetching customers for user:", user.email);
+
     const loadCustomers = async () => {
       dispatch({ type: "FETCH_START" });
       try {
@@ -27,7 +40,7 @@ export function CustomerProvider({ children }) {
       }
     };
     loadCustomers();
-  }, []);
+  }, [user]);
 
   const addCustomer = async (customerData) => {
     dispatch({ type: "ADD_START" });
@@ -40,14 +53,12 @@ export function CustomerProvider({ children }) {
       if (!response.ok) throw new Error(`Server error: ${response.status}`);
       const createdCustomer = await response.json();
       dispatch({ type: "ADD_CUSTOMER", payload: createdCustomer });
-      return createdCustomer; // ← ADD THIS LINE
+      return createdCustomer;
     } catch (err) {
       dispatch({ type: "ADD_ERROR" });
       alert(`Failed to add customer: ${err.message}`);
     }
   };
-
-  const toggleForm = () => dispatch({ type: "TOGGLE_FORM" });
 
   const updateCustomer = async (customerId, updates) => {
     try {
@@ -73,7 +84,6 @@ export function CustomerProvider({ children }) {
       });
       if (!response.ok) throw new Error(`Server error: ${response.status}`);
       dispatch({ type: "DELETE_CUSTOMER", payload: customerId });
-      if (selectedId === customerId) setSelectedId(null);
     } catch (err) {
       alert(`Failed to delete customer: ${err.message}`);
     }
@@ -82,7 +92,7 @@ export function CustomerProvider({ children }) {
   const filteredCustomers = customers
     .filter((c) => c.firstName.toLowerCase().includes(searchTerm.toLowerCase()))
     .filter((c) => statusFilter === "all" || c.status === statusFilter);
-    
+
   return (
     <CustomerContext.Provider
       value={{
@@ -91,17 +101,13 @@ export function CustomerProvider({ children }) {
         loading,
         error,
         submitting,
-        showForm,
         searchTerm,
         statusFilter,
-        selectedId,
         addCustomer,
         updateCustomer,
         deleteCustomer,
-        toggleForm,
         setSearchTerm,
         setStatusFilter,
-        setSelectedId,
       }}
     >
       {children}
