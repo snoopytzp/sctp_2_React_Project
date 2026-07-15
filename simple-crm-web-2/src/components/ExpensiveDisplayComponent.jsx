@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 function ExpensiveDisplayComponent() {
   console.log("ExpensiveDisplayComponent rendered");
   // If this is too slow on your machine, reduce the `length`
@@ -12,7 +14,7 @@ function ExpensiveDisplayComponent() {
         marginBottom: "16px",
       }}
     >
-      <h3>Expensive Display Component (memoized)</h3>
+      <h3>Expensive Display Component</h3>
       {items.map((item, i) => (
         <span
           key={i}
@@ -31,4 +33,4 @@ function ExpensiveDisplayComponent() {
   );
 }
 
-export default ExpensiveDisplayComponent;
+export default memo(ExpensiveDisplayComponent);
