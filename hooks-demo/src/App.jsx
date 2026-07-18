@@ -1,10 +1,12 @@
 // src/App.jsx
 import { useContext, useState, useEffect, useMemo } from "react";
 import { AuthContext, AuthProvider } from "./contexts/AuthContext";
+import { useAuth} from "./hooks/useAuth";
+import { useDebounce } from "./hooks/useDebounce";
 
 // ─── Auth Panel (messy: reads context directly, no encapsulation) ──────────────
 function AuthPanel() {
-  const { currentUser, login, logout } = useContext(AuthContext);
+  const { currentUser, login, logout } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -81,13 +83,14 @@ const CONTACTS = [
 
 function SearchPanel() {
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query);
 
   const results = useMemo(
     () =>
       CONTACTS.filter((name) =>
-        name.toLowerCase().includes(query.toLowerCase()),
+        name.toLowerCase().includes(debouncedQuery.toLowerCase()),
       ),
-    [query],
+    [debouncedQuery],
   );
 
   return (
@@ -189,6 +192,11 @@ function AppContent() {
 }
 
 export default function App() {
+  // simple illustration for hooking - check whether context has been created
+  //const authCtx = useContext(AuthContext); 
+  //const authCtx = useAuth(); 
+  //console.log("App: authCtx =", authCtx); // Debugging line to check context value
+
   return (
     <AuthProvider>
       <AppContent />
