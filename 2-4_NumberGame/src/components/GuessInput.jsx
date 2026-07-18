@@ -1,38 +1,47 @@
-import {useState} from "react";
+import { useContext, useState } from "react";
 
-function GuessInput({ onGuess, disabled }) {
-    // Input Value
-    const [inputValue, setInputValue] = useState("");
-    // event handler
-    const inputChangeHandler = (e) => {
-        // parse is not a good converter
-        const guess = parseInt(e.target.value, 10);
-        console.log("input guess", guess);
-        if (!isNaN(guess) || e.target.value === "") {
-            setInputValue(e.target.value);
-        }
-    };
-    const submitHandler = (e) => {
-        e.preventDefault();
-        const guess = parseInt(inputValue, 10);
-        if (!isNaN(guess)) {
-            onGuess(guess);
-            setInputValue("");
-        }
-    };
+import { GameContext } from "../contexts/GameContext";
+import styles from "./GuessInput.module.css";
 
-    return (
-        <form onSubmit={submitHandler}>
-            <input 
-                type="text"
-                inputMode="numeric"
-                value={inputValue}
-                onChange={inputChangeHandler}
-                disabled={disabled}
-            />
-            <button type="submit" disabled={disabled}>Guess</button>
-        </form>
-        );
+function GuessInput() {
+  const { state, dispatch } = useContext(GameContext);
+  const [inputValue, setInputValue] = useState("");
+
+  const inputChangeHandler = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+
+    const guess = parseInt(inputValue, 10);
+    if (isNaN(guess)) return;
+
+    dispatch({ type: "SUBMIT_GUESS", payload: guess });
+    setInputValue("");
+  };
+
+  const disabled = state.status !== "playing";
+
+  return (
+    <form className={styles.form} onSubmit={submitHandler}>
+      <label htmlFor="guess-input">Enter a number between 1 and 20</label>
+      <div className={styles.controls}>
+        <input
+          id="guess-input"
+          className={styles.input}
+          type="text"
+          inputMode="numeric"
+          value={inputValue}
+          onChange={inputChangeHandler}
+          disabled={disabled}
+        />
+        <button className={styles.button} type="submit" disabled={disabled}>
+          Guess
+        </button>
+      </div>
+    </form>
+  );
 }
 
 export default GuessInput;
