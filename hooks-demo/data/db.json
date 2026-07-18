@@ -1,0 +1,38 @@
+{
+  "contacts": [
+    {
+      "id": 1,
+      "name": "Alice Tan",
+      "email": "alice@example.com",
+      "role": "admin"
+    },
+    { "id": 2, "name": "Bob Lim", "email": "bob@example.com", "role": "user" },
+    {
+      "id": 3,
+      "name": "Carol Wong",
+      "email": "carol@example.com",
+      "role": "user"
+    },
+    {
+      "id": 4,
+      "name": "David Chen",
+      "email": "david@example.com",
+      "role": "admin"
+    },
+    { "id": 5, "name": "Eve Ng", "email": "eve@example.com", "role": "user" },
+    {
+      "id": 6,
+      "name": "Frank Ho",
+      "email": "frank@example.com",
+      "role": "user"
+    }
+  ],
+  "tags": [
+    { "id": 1, "label": "React" },
+    { "id": 2, "label": "TypeScript" },
+    { "id": 3, "label": "Testing" },
+    { "id": 4, "label": "Performance" },
+    { "id": 5, "label": "Custom Hooks" },
+    { "id": 6, "label": "React Query" }
+  ]
+}
