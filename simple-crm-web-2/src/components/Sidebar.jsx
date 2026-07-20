@@ -46,7 +46,7 @@ function Sidebar() {
         <NavLink to="/app/products" className={navLinkClass}>
           <Package size={17} />
           <span>Products</span>
-        </NavLink>;
+        </NavLink>
       </nav>
 
       <div className={styles.foot}>

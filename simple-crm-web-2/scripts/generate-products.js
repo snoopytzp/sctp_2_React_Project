@@ -1,4 +1,3 @@
-// scripts/generate-products.js
 import { writeFileSync } from "fs";
 
 const CATEGORIES = [

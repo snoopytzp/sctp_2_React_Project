@@ -1,4 +1,3 @@
-// src/pages/ProductsPage.jsx
 import { useState, useMemo, useCallback } from "react";
 import { mockProducts } from "../../data/products.js";
 import ProductSearchBar from "../components/ProductSearchBar";
@@ -7,7 +6,7 @@ import styles from "./ProductsPage.module.css";
 import ExpensiveDisplayComponent from "../components/ExpensiveDisplayComponent.jsx";
 
 function applyDiscount(product) {
-  const discount = (product.id % 7) / 20;
+  const discount = (product.id % 7) / 20; // deterministic fake discount, 0-30%
   return {
     ...product,
     discountedPrice: Number((product.price * (1 - discount)).toFixed(2)),
@@ -15,25 +14,31 @@ function applyDiscount(product) {
 }
 
 function ProductsPage() {
+
   const [search, setSearch] = useState("");
   const [cartCount, setCartCount] = useState(0);
-  
-//   const handleSearchChange = (value) => {
-//     setSearch(value);
-//   };
 
-// useCallback: stable function reference across renders
+  // const handleSearchChange = (value) => {
+  //   setSearch(value);
+  // };
+
   const handleSearchChange = useCallback((value) => {
     setSearch(value);
-  },[]);  // no dependencies, setSearch is stable from useState
+  }, []);
 
-  // useMemo: only recompute when search changes
+  // This computation runs on every render, even when cartCount changes
+  // const filteredProducts = mockProducts
+  //   .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
+  //   .map(applyDiscount);
+
   const filteredProducts = useMemo(() => {
     return mockProducts
       .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
       .map(applyDiscount);
   }, [search]);
 
+
+  // const search = {};
   return (
     <div className={styles.page}>
       <div className={styles.header}>
@@ -55,6 +60,7 @@ function ProductsPage() {
       <p className={styles.count}>
         Showing <strong>{filteredProducts.length}</strong> products
       </p>
+      {/* memoized component, does not re-render when parent re-renders */}
       <ExpensiveDisplayComponent />
       <ProductList products={filteredProducts} />
     </div>

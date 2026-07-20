@@ -1,8 +1,7 @@
-// src/components/ProductList.jsx
-import {memo} from "react";
 import styles from "../pages/ProductsPage.module.css";
 
 function ProductList({ products }) {
+  console.log("ProductList re-rendered")
   return (
     <div className={styles.grid}>
       {products.map((product) => (
@@ -19,4 +18,4 @@ function ProductList({ products }) {
   );
 }
 
-export default memo(ProductList);
+export default ProductList;

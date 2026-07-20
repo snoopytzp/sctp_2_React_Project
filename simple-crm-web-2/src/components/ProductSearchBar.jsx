@@ -1,4 +1,5 @@
-// src/components/ProductSearchBar.jsx
+import { memo } from "react";
+
 function ProductSearchBar({ value, onChange }) {
   console.log("ProductSearchBar rendered");
   return (
@@ -15,4 +16,4 @@ function ProductSearchBar({ value, onChange }) {
   );
 }
 
-export default ProductSearchBar;
+export default memo(ProductSearchBar);
