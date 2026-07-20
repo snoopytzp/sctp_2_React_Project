@@ -26,7 +26,7 @@ export function CustomerProvider({ children }) {
       return; // Don't fetch if not logged in
     }
 
-    console.log("Fetching customers for user:", user.email);
+    console.log("Fetching customers for user");
 
     const loadCustomers = async () => {
       dispatch({ type: "FETCH_START" });

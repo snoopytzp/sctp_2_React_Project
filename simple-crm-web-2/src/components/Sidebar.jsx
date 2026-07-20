@@ -1,5 +1,5 @@
 import { NavLink } from "react-router";
-import { LayoutDashboard, Users, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, LogOut, Package } from "lucide-react";
 
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
@@ -42,6 +42,10 @@ function Sidebar() {
         <NavLink to="/app/customers" className={navLinkClass}>
           <Users size={17} />
           <span>Customers</span>
+        </NavLink>
+        <NavLink to="/app/products" className={navLinkClass}>
+          <Package size={17} />
+          <span>Products</span>
         </NavLink>
       </nav>
 
