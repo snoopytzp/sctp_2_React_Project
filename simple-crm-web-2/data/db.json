@@ -1,4 +1,13 @@
 {
+  "interactions": [
+    {
+      "type": "call",
+      "notes": "aaa",
+      "date": "2026-07-20",
+      "customerId": "c1",
+      "id": "GtfjnkiUcB4"
+    }
+  ],
   "customers": [
     {
       "id": "c1",
