@@ -1,19 +1,25 @@
-// src/components/ContactList.tsx
 import type { Contact } from "../types/Contact";
 
 type ContactListProps = {
-  contacts: Contact[];
   title?: string;
+  contacts: Contact[];
+  onRemove: (id: number) => void;
 };
 
-export function ContactList({ contacts }: ContactListProps) {
+function ContactList({ title, contacts, onRemove }: ContactListProps) {
   return (
-    <ul className="contact-list">
-      {contacts.map((c) => (
-        <li key={c.id} className="contact-item">
-          <strong>{c.name}</strong> · {c.email}
-        </li>
-      ))}
-    </ul>
+    <>
+      {title && <h2>{title}</h2>}
+      <ul className="contact-list">
+        {contacts.map((c) => (
+          <li key={c.id} className="contact-item">
+            <strong>{c.name}</strong> · {c.email}
+            <button onClick={() => onRemove(c.id)}>Remove</button>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
+
+export default ContactList;

@@ -1,10 +1,9 @@
-// src/components/SearchBar.tsx
 type SearchBarProps = {
   query: string;
-  onQueryChange: (newQuery: string) => void;
+  onQueryChange: (value: string) => void;
 };
 
-export function SearchBar({ query, onQueryChange }: SearchBarProps) {
+function SearchBar({ query, onQueryChange }: SearchBarProps) {
   return (
     <input
       className="search-input"
@@ -15,4 +14,4 @@ export function SearchBar({ query, onQueryChange }: SearchBarProps) {
   );
 }
 
-//export default SearchBar;
+export default SearchBar;
