@@ -1,122 +1,87 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+// src/App.tsx
+import { useState, useEffect } from "react";
+import "./App.css";
+import type { Contact } from "./types/Contact";
+import { SearchBar } from "./components/SearchBar";
+import { ContactList } from "./components/ContactList";
 
-function App() {
-  const [count, setCount] = useState(0)
+const initialContacts: Contact[] = [
+  { id: 1, name: "Alice Tan", email: "alice@example.com" },
+  { id: 2, name: "Bob Lim", email: "bob@example.com" },
+  { id: 3, name: "Carol Wong", email: "carol@example.com" },
+  { id: 4, name: "David Chen", email: "david@example.com" },
+];
+
+const appTitle: string = "ts-contacts";
+
+export default function App() {
+  const [contacts, setContacts] = useState<Contact[]>(initialContacts);
+  const [query, setQuery] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadContacts = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch('http://localhost:3001/contacts');
+
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`);
+        }
+
+        const data: Contact[] = await response.json();
+        setContacts(data);
+      } catch (err) {
+        //setError(err.message);
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadContacts();
+  }, []);
+
+  if (loading) return <p className="status-message">Loading...</p>;
+  if (error) return <p className="status-message error">Error: {error}</p>;
+
+  const filtered = contacts.filter((c) =>
+    c.name.toLowerCase().includes(query.toLowerCase()),
+  );
+
+  const addContact = (newContact: Contact) => {
+    setContacts((prev) => [...prev, newContact]);
+  };
+
+  const handleAdd = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!newName || !newEmail) return;
+    addContact({ id: Date.now(), name: newName, email: newEmail });
+    setNewName("");
+    setNewEmail("");
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <div className="app">
+      <h1>appTitle</h1>
+      <SearchBar query={query} onQueryChange={setQuery} />
+      <form onSubmit={handleAdd} className="add-contact-form">
+        <input
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          placeholder="Name"
+        />
+        <input
+          value={newEmail}
+          onChange={(e) => setNewEmail(e.target.value)}
+          placeholder="Email"
+        />
+        <button type="submit">Add</button>
+      </form>
+      <ContactList contacts={filtered} title="Contacts" />
+    </div>
+  );
 }
-
-export default App
