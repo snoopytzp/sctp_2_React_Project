@@ -1,6 +1,8 @@
 // app/page.js
+import Image from 'next/image';
 import Link from 'next/link';
 import styles from './page.module.css';
+import SpecialOffer from './components/SpecialOffer';
 
 export const metadata = {
   title: 'Simple CRM — Know Every Customer, Close Every Deal',
@@ -17,10 +19,13 @@ export default function HomePage() {
           Know every customer. Close every deal.
         </h1>
         <div className={styles.image}>
-          <img
-            src="/team-office.jpg"
-            alt="A small team reviewing customer data together on a laptop"
-          />
+          <Image
+          src="/team-office.jpg"
+          alt="A small team reviewing customer data together on a laptop"
+          width={800}
+          height={600}
+          priority
+        />
         </div>
         <p className={styles.subhead}>
           Simple CRM helps small teams track customers, log interactions, and
@@ -35,6 +40,7 @@ export default function HomePage() {
           Sign in to get started
         </Link>
       </div>
+      <SpecialOffer />
     </main>
   );
 }
