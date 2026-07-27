@@ -7,15 +7,16 @@ export default function App() {
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(true);
 
-  useEffect(() => {
-    if (!isRunning) return;
+useEffect(() => {
+  if (!isRunning) return;
 
-    const timer = setInterval(() => {
-      setSeconds((prev) => prev + 1);
-    }, 1000);
+  const timer = setInterval(() => {
+    console.log("tick", seconds);
+    setSeconds((prev) => prev + 1);
+  }, 1000);
 
-    return () => clearInterval(timer);
-  }, [isRunning]);
+  return () => clearInterval(timer);
+}, [isRunning]);
 
   return (
     <View style={styles.container}>
