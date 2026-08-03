@@ -10,6 +10,7 @@ import { Colors } from "./styles/colors";
 import Ionicons from "@react-native-vector-icons/ionicons";
 import MenuScreen from "./screens/MenuScreen";
 import ProductDetailScreen from "./screens/ProductDetailScreen";
+import NestedNavigator from "./navigators/NestedNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -52,6 +53,15 @@ function BottomTabsNavigator() {
           ),
         }}
       />
+      {/* <Tab.Screen
+        name="ProductDetail"
+        component={ProductDetailScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings" size={size} color={color} />
+          ),
+        }}
+      /> */}
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}
@@ -138,7 +148,13 @@ function StackNavigator() {
         options={{ headerTitle: "🔥 Hot Deals!" }}
       />
       <Stack.Screen name="Settings" component={SettingsScreen} />
-      <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
+      <Stack.Screen
+        name="ProductDetail"
+        component={ProductDetailScreen}
+        options={({ route }) => ({
+          title: `Product Detail: ${route.params.product}`,
+        })}
+      />
     </Stack.Navigator>
   );
 }
@@ -148,7 +164,8 @@ export default function App() {
     <NavigationContainer>
       {/* <BottomTabsNavigator /> */}
       {/* <DrawerNavigator /> */}
-      <StackNavigator />
+      {/* <StackNavigator /> */}
+      <NestedNavigator />
     </NavigationContainer>
   );
 }
