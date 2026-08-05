@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   Button,
   StyleSheet,
@@ -17,9 +18,17 @@ function CameraScreen({ navigation }) {
   const [facing, setFacing] = useState("back");
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef(null);
+  const [isScanned, setIsScanned] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsScanned(false);
+    }, []),
+  );
 
   const handleBarcodeScanned = ({ type, data }) => {
-    console.log("barcode scanned:", data )
+    console.log("barcode scanned:", data );
+    setIsScanned(true);
     navigation.navigate("BarcodeResult", { barcodeData: data });
   };
 
@@ -67,7 +76,7 @@ function CameraScreen({ navigation }) {
         facing={facing}
         style={styles.camera}
         ref={cameraRef}
-        onBarcodeScanned={handleBarcodeScanned}
+        onBarcodeScanned={isScanned ? undefined : handleBarcodeScanned}
       />
       <View style={styles.buttonsContainer}>
         <TouchableOpacity onPress={toggleCameraFacing} style={styles.button}>

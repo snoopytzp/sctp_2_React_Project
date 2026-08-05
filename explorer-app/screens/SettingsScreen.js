@@ -1,11 +1,15 @@
 // screens/SettingsScreen.js
-import { Text, View } from "react-native";
+import { useContext } from "react";
+import { Button, View } from "react-native";
+import AuthContext from "../contexts/AuthContext";
 import { commonStyles } from "../styles/common";
 
 function SettingsScreen() {
+  const { logout } = useContext(AuthContext);
+
   return (
     <View style={commonStyles.container}>
-      <Text>Settings</Text>
+      <Button title="Logout" onPress={logout} />
     </View>
   );
 }

@@ -1,4 +1,3 @@
-// navigation/AppStackNavigator.js
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Colors } from "../styles/colors";
 import TabNavigator from "./TabNavigator";
