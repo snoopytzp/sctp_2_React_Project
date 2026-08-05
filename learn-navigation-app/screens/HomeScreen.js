@@ -7,10 +7,11 @@ import { Colors } from "../styles/colors";
 export default function HomeScreen({ navigation }) {
   const [searchQuery, setSearchQuery] = useState("");
 
-  console.log(
-    "🟢 navigation stack - HomeScreen",
-    JSON.stringify(navigation.getState().routes, null, 2),
-  );
+  // Effect runs when the screen is focused
+  // useFocusEffect(() => {
+  //   console.log("🟢 HomeScreen is focused");
+  //   return () => console.log("🔴 Homescreen is unfocused");
+  // });
 
   useFocusEffect(
     useCallback(() => {
@@ -18,15 +19,12 @@ export default function HomeScreen({ navigation }) {
     }, []),
   );
 
+  // How this works
   // const clearSearchQuery = () => setSearchQuery("");
-
-  // runs when the scnree is focused
-  // useFocusEffect(() => {
-  //   console.log("🟢 HomeScreen is focused");
-
-  //   return () => console.log("🔴 Homescreen is unfocused");
-  // });
-
+  // clearSearchQuery needs to have a stable reference
+  // const clearSearchQuery = useCallback(() => {
+  //   setSearchQuery("");
+  // }, []);
   // useFocusEffect(clearSearchQuery)
 
   return (

@@ -8,6 +8,7 @@ export default function HotDealsScreen({ navigation }) {
       <Header>Hot Deals</Header>
       <Button
         title="Apple iPad @ $299"
+        // navigate(screenName, params)
         onPress={() =>
           navigation.navigate("ProductDetail", {
             product: "Apple iPad",

@@ -1,12 +1,13 @@
 import { StyleSheet, Text, View } from "react-native";
+import { useLayoutEffect } from "react";
 import { useRoute } from "@react-navigation/native";
 import Header from "../components/Header";
 import { Colors } from "../styles/colors";
 
-export default function ProductDetailScreen() {
-
+export default function ProductDetailScreen({ navigation }) {
   const { params } = useRoute();
 
+  // Alternative way to set the header title dynamically
   // useLayoutEffect(() => {
   //   navigation.setOptions({
   //     headerTitle: `Product Details: ${params.product}`,

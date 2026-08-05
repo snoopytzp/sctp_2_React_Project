@@ -1,4 +1,3 @@
-// components/Header.js
 import { Text, StyleSheet } from "react-native";
 
 function Header({ children }) {
