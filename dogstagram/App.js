@@ -1,5 +1,5 @@
 // App.js
-import { StyleSheet, Text, View, Button } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 import { Image } from "react-native";
 import { ScrollView } from "react-native";
@@ -10,6 +10,9 @@ import { useRef } from "react";
 import * as Crypto from "expo-crypto";
 import { FlatList } from "react-native";
 import { Alert } from "react-native";
+import Button from "./components/Button";
+import { Colors } from "./styles/colors";
+import LoadingOverlay from "./components/LoadingOverlay";
 
 export default function App() {
   const [dogs, setDogs] = useState([]);
@@ -58,7 +61,7 @@ export default function App() {
 
   return (
   <SafeAreaProvider>
-    <LinearGradient colors={["#e5dbff", "#f3f0ff"]} style={{ flex: 1 }}>
+  <LinearGradient colors={[Colors.PRIMARY_LIGHT_2, Colors.PRIMARY_LIGHT_1]} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.container}>
           <View style={styles.mainContainer}>
@@ -74,14 +77,10 @@ export default function App() {
                     ListEmptyComponent={<Text>🫤 No dogs yet!</Text>}
                     showsVerticalScrollIndicator={false}
                   />
-                  {isLoading && (
-                    <View style={styles.loadingOverlay}>
-                      <ActivityIndicator size="large" color="#333" />
-                    </View>
-                  )}
+                  {isLoading && <LoadingOverlay />}
               </View>
-              <Button title="Get Dog" onPress={getDog} />
-              <Button title="Clear" onPress={handleClearDogs} />
+              <Button onPress={getDog}>Get Dog</Button>
+              <Button onPress={handleClearDogs}>Clear</Button>
             </View>
           </View>
         </View>
@@ -101,11 +100,23 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "center",
   },
-  buttonsContainer: {
-    flexDirection: "row",
-    gap: 15,
-    marginBottom: 20,
+  buttonContainer: {
+    backgroundColor: "#6741d9",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 5,
+    alignItems: "center",
     justifyContent: "center",
+
+    // Shadow for Android - higher value means a bigger shadow
+    elevation: 8,
+    // Shadow for iOS
+    shadowColor: "#000",
+    // width: horizontal offset, height: vertical offset
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    // 1 = sharp shadow, 10 = soft blurry shadow
+    shadowRadius: 2,
   },
   mainContainer: {
     flex: 1,
@@ -126,5 +137,12 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center", 
     alignItems: "center",
-},
+  },
+  appHeader: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 20,
+    textAlign: "center",
+    color: Colors.PRIMARY,
+  },
 });
