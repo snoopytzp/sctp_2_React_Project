@@ -9,6 +9,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRef } from "react";
 import * as Crypto from "expo-crypto";
 import { FlatList } from "react-native";
+import { Alert } from "react-native";
 
 export default function App() {
   const [dogs, setDogs] = useState([]);
@@ -43,6 +44,18 @@ export default function App() {
     <Image source={{ uri: item.url }} style={styles.dogImage} />
   );
 
+  const handleClearDogs = () => {
+    if (dogs.length === 0) {
+      Alert.alert("Clear Dogs", "No dogs to clear", [{ text: "OK" }]);
+      return;
+    }
+
+    Alert.alert("Clear Dogs", "Are you sure you want to clear all dogs?", [
+      { text: "Cancel" },
+      { text: "OK", onPress: () => setDogs([]) },
+    ]);
+  };
+
   return (
   <SafeAreaProvider>
     <LinearGradient colors={["#e5dbff", "#f3f0ff"]} style={{ flex: 1 }}>
@@ -68,7 +81,7 @@ export default function App() {
                   )}
               </View>
               <Button title="Get Dog" onPress={getDog} />
-              <Button title="Clear" onPress={() => setDogs([])} />
+              <Button title="Clear" onPress={handleClearDogs} />
             </View>
           </View>
         </View>
