@@ -2,6 +2,7 @@
 import { StyleSheet, Text, View, Button } from "react-native";
 import { useState } from "react";
 import { Image } from "react-native";
+import { ScrollView } from "react-native";
 
 export default function App() {
   const [dogs, setDogs] = useState([]);
@@ -25,13 +26,15 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.mainContainer}>
       <Text style={styles.appHeader}>🐶 Dogstagram</Text>
       <View style={styles.buttonsContainer}>
         <View style={styles.dogsContainer}>
-          {dogs.map((dogUrl, index) => (
-            <Image key={index} source={{ uri: dogUrl }} style={styles.dogImage} />
-          ))}
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {dogs.map((dogUrl, index) => (
+              <Image key={index} source={{ uri: dogUrl }} style={styles.dogImage} />
+            ))}
+          </ScrollView>
         </View>
         <Button title="Get Dog" onPress={getDog} />
         <Button title="Clear" onPress={() => setDogs([])} />
@@ -56,7 +59,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     justifyContent: "center",
   },
-  container: {
+  mainContainer: {
     flex: 1,
     backgroundColor: "#fff",
     marginTop: 60,
