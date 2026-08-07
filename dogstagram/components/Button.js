@@ -1,5 +1,4 @@
-// components/Button.js
-import { StyleSheet, Text, Pressable } from "react-native";
+import { Text, Pressable, StyleSheet } from "react-native";
 import { Colors } from "../styles/colors";
 
 function Button({ children, onPress }) {
@@ -16,8 +15,6 @@ function Button({ children, onPress }) {
   );
 }
 
-export default Button;
-
 const styles = StyleSheet.create({
   buttonContainer: {
     backgroundColor: Colors.PRIMARY,
@@ -26,18 +23,26 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
+
+    // Shadow for Android - higher value means a bigger shadow
     elevation: 8,
+
+    // Shadow for iOS
     shadowColor: "#000",
+    // width: horizontal offset, height: vertical offset
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
+    // 1 = sharp shadow, 10 = soft blurry shadow
     shadowRadius: 2,
   },
   buttonText: {
+    fontFamily: "Rubik_700Bold",
     color: "#fff",
-    fontWeight: "700",
     textTransform: "uppercase",
   },
   buttonPressed: {
     opacity: 0.6,
   },
 });
+
+export default Button;
