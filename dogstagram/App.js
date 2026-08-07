@@ -8,6 +8,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRef } from "react";
 import * as Crypto from "expo-crypto";
+import { FlatList } from "react-native";
 
 export default function App() {
   const [dogs, setDogs] = useState([]);
@@ -27,13 +28,20 @@ export default function App() {
         throw new Error(`Request failed with status ${response.status}`);
       }
       const data = await response.json();
-      setDogs((prevDogs) => [...prevDogs, data.message]);
+      setDogs((prevDogs) => [
+        ...prevDogs,
+        { id: Crypto.randomUUID(), url: data.message },
+      ]);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const renderDogItem = ({ item }) => (
+    <Image source={{ uri: item.url }} style={styles.dogImage} />
+  );
 
   return (
   <SafeAreaProvider>
@@ -44,16 +52,20 @@ export default function App() {
             <Text style={styles.appHeader}>🐶 Dogstagram</Text>
             <View style={styles.buttonsContainer}>
               <View style={styles.dogsContainer}>
-                <ScrollView ref={scrollViewRef} onContentSizeChange={scrollToEnd} showsVerticalScrollIndicator={false}>
-                  {dogs.map((dogUrl, index) => (
-                    <Image key={index} source={{ uri: dogUrl }} style={styles.dogImage} />
-                  ))}
-                </ScrollView>
-                {isLoading && (
-                  <View style={styles.loadingOverlay}>
-                    <ActivityIndicator size="large" color="#333" />
-                  </View>
-                )}
+                  <FlatList
+                    ref={scrollViewRef}
+                    onContentSizeChange={scrollToEnd}
+                    data={dogs}
+                    keyExtractor={(dog) => dog.id}
+                    renderItem={renderDogItem}
+                    ListEmptyComponent={<Text>🫤 No dogs yet!</Text>}
+                    showsVerticalScrollIndicator={false}
+                  />
+                  {isLoading && (
+                    <View style={styles.loadingOverlay}>
+                      <ActivityIndicator size="large" color="#333" />
+                    </View>
+                  )}
               </View>
               <Button title="Get Dog" onPress={getDog} />
               <Button title="Clear" onPress={() => setDogs([])} />
