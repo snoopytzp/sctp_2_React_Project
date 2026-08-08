@@ -20,13 +20,29 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.snoopytzp.dogstagram"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-font"
-    ]
+    "expo": {
+      "plugins": [
+        "expo-font",
+        "@react-native-vector-icons/ionicons",
+        [
+          "expo-image-picker",
+          {
+            "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+            "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
+          }
+        ]
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8b40834f-a678-4932-9643-f84ef7cb4041"
+      }
+    }
   }
 }
